@@ -10,6 +10,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.io.PrintWriter;
 
 public class Lilly_Spellchecker {
 
@@ -36,10 +37,23 @@ public class Lilly_Spellchecker {
 		
 		// For the sake of our sanity, i'm printing out the available file paths to choose from to make testing/choosing files easier
 		File[] srcList = srcFile.listFiles(txtFiles);
-		out.println(srcList.length +  " available file path(s) to choose from: \n");
+		// if there's ONLY one file, we're going to make a generic dictionary & test file. so if you mindlessly press enter, you won't get an error
+		if (srcList.length <= 1 ) {
+			createDictionary();
+			out.println(srcList.length +  " available file path(s) to choose from: \n");
+			for (File file : srcList) {
+				out.println("> " +file.getPath());
+			}
+		} else 		
 		for (File file : srcList) {
 			out.println("> " +file.getPath());
+		// the program now checks specifically for the generic testfiles, if it's not there - it'll make them. 
+			if (!new File("src/dictionary.txt").exists() || !new File("src/testStates.txt").exists()) {
+				createDictionary();
+			} 
 		}
+		out.println(srcList.length +  " available file path(s) to choose from: \n");
+
 		
 		// since we're not cool with hardcoded files... we're letting /you/, the user put in your own files. 
 		out.print("\nEnter the file path of the dictionary file (example: src/dictionary.txt). "
@@ -60,8 +74,8 @@ public class Lilly_Spellchecker {
 		
 		// likewise with the test file, if you enter nothing - you'll get the testStates file.
 		if (tString.length() <= 0) {
-			tString = ("src/testStates.txt");
-			out.println("Using default test file: " + tString);
+		tString = ("src/testStates.txt");
+		out.println("Using default test file: " + tString);
 		}
 
 		File dFile = new File(dString);
@@ -77,7 +91,7 @@ public class Lilly_Spellchecker {
 		
 		// if testfile no exist. u git da teststate, capiche??
 		if (!tFile.exists()) {
-			out.println(dString + " cannot be resolved, using default test file.");
+			out.println(tString + " cannot be resolved, using default test file.");
 			tFile = new File("src/testStates.txt");
 			tString = ("src/testStates.txt");
 		}
@@ -125,4 +139,51 @@ public class Lilly_Spellchecker {
 		} else 	
 		out.print("\nThere are " + noMatch.size() + " word(s) spelled incorrectly. \nHere is a list: " + noMatch);
 	} 
+
+	public static void createDictionary() {
+		//out.println("Creating dictionary & testState file.");
+		ArrayList<String> newDictionary = new ArrayList<>();
+		newDictionary.add("Alabama");
+		newDictionary.add("Alaska");
+		newDictionary.add("Arizona");
+		newDictionary.add("Arkansas");
+		newDictionary.add("California");
+		newDictionary.add("Colorado");
+		newDictionary.add("Connecticut");
+		newDictionary.add("Delaware");
+		newDictionary.add("Florida");
+		newDictionary.add("Georgia");
+		
+		ArrayList<String> newTestState = new ArrayList<>();
+		newTestState.add("labama1");
+		newTestState.add("Alaka");
+		newTestState.add("Arizona");
+		newTestState.add("Arkansas");
+		newTestState.add("California");
+		newTestState.add("Colorado");
+		newTestState.add("Connecticut");
+		newTestState.add("Delaware");
+		newTestState.add("Florida");
+		newTestState.add("Georgia");
+		
+		
+		try { 
+			PrintWriter dm = new PrintWriter("src/dictionary.txt");
+			PrintWriter tm = new PrintWriter("src/testStates.txt");
+			for (String state : newDictionary) {
+				dm.println(state);
+			}
+			out.println("Generic dictionary file created.");
+			for (String test : newTestState) {
+				tm.println(test);
+			}
+			out.println("Generic test file created.");
+			dm.close();
+			tm.close();
+
+		} catch (IOException e) {
+			out.print("bruh wtf did u dooooooooooooooo lmao");
+			e.printStackTrace();
+		}
+	}
 }
